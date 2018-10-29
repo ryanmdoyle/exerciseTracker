@@ -19,12 +19,13 @@ const client = new MongoClient(url);
 
 const findDocuments = function(db, query, callback) {
   // Get the documents collection
-const collection = db.collection('workouts');
-// Find some documents
-collection.find(query).toArray(function(err, docs) {
-  assert.equal(err, null);
-  callback(docs);
-});
+  const collection = db.collection('workouts');
+  
+  // Find some documents
+  collection.find(query).toArray(function(err, docs) {
+    assert.equal(err, null);
+    callback(docs);
+  });
 }
 
 //GET INDEX PAGE
@@ -81,7 +82,6 @@ app.get('/', (req, res) => {
 
   //GET ALL USERS
   app.get('/api/exercise/users', (req, res) => {
-
     client.connect(() => {
       const db = client.db(dbName);
       findDocuments(db, {}, (data) => {
@@ -90,6 +90,26 @@ app.get('/', (req, res) => {
     })
   })
 
+  //ADD EXERCISES
+  app.post('/api/exercise/add', (req, res) => {
+    const today = new Date();
+    const workoutDate = req.body.date ? req.body.date : today;
+    
+    const newWorkout = {
+      description: req.body.description,
+      duration: req.body.duration,
+      date: workoutDate
+    }
+
+    client.connect(() => {
+      const db = client.db(dbName);
+      db.collection('workouts').updateOne({_id: req.body.userId}, { $push: { workouts: newWorkout } }, () => {
+        res.send(`updated user:${req.body.userId}`);
+      })
+      
+      client.close();
+    })
+  })
 
   
   ////////////////////////////////////////////////////////////////////////////////////////////////
