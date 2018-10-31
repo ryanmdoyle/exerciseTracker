@@ -28,6 +28,13 @@ const findDocuments = function(db, query, callback) {
   });
 }
 
+const addWorkout = (db, user, workout, calback) => {
+  const collection = db.colletion('workouts')
+  client.connect((err) => {
+    //find and modify here
+  })
+}
+
 //GET INDEX PAGE
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/views/index.html')
